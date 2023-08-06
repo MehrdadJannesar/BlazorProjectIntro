@@ -1,0 +1,28 @@
+﻿@using BlazorProjectIntro.Libraries.Product;
+@using BlazorProjectIntro.Libraries.Product.Model;
+
+@page "/"
+
+@inject IProductService productService;
+
+<PageTitle>لیست محصولات ما</PageTitle>
+
+@if (Products?.Any() ?? false)
+{
+    <div class="row">
+        @foreach (var product in Products)
+        {
+            <ProductItem Product="product"/>
+        }
+    </div>
+}
+
+@code {
+    public IList<ProductModel>? Products { get; set; }
+    protected override void OnInitialized()
+    {
+        Products = productService.GetAll();
+        base.OnInitialized();
+    }
+
+}

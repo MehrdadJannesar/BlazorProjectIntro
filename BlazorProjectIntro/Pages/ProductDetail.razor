@@ -1,0 +1,111 @@
+﻿@page "/Product/{slug}";
+@using BlazorProjectIntro.Libraries.Product;
+@using BlazorProjectIntro.Libraries.Product.Model;
+@using BlazorProjectIntro.Libraries.ShoppingCart;
+@inject IProductService ProductService;
+@inject IShoppingCartService shoppingCartService;
+@if (Product != null)
+{
+    <PageTitle>@Product.Name</PageTitle>
+}
+
+<div class="row">
+    @if (Product == null)
+    {
+        <div class="alert alert-warning">Not found!</div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-3">
+                <img src="/Images/@Product.Image" class="img-thumbnail" style="width:100%" />
+            </div>
+            <div class="col-9">
+                <h2>@Product.Name</h2>
+                <hr />
+                <p class="text-success">Price : @Product.Price $</p>
+                <div class="row m-3">
+                    @if (shoppingCartService.Count() > 0)
+                    {
+                        <p>Items in the shopping cart : @shoppingCartService.Count()</p>
+                    }
+                    <div class="col-4">
+                        <input @bind="Quantity" type="number" placeholder="Count?" class="form-control" />
+                    </div>
+                    <div class="col-3">
+                        <button class="btn btn-outline-primary"
+                        @onclick="AddToCart">
+                            @if (shoppingCartService.HasProduct(Product.Sku))
+                            {
+                                <span>
+                                    Add to cart
+                                    @if (Quantity.HasValue)
+                                    {
+                                        <text>@Quantity More than</text>
+                                    }
+                                </span>
+                            }
+                            else
+                            {
+                                <span>
+                                    First shopping...
+                                </span>
+                            }
+                        </button>
+                    </div>
+                </div>
+                <ul>
+                    @foreach (var Product in ListProduct)
+                    {
+                        <li>
+                            <a href="@Product.FullUrl">
+                                @Product.Name
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+
+    public ProductModel? Product { get; set; }
+    public IList<ProductModel> ListProduct { get; set; }
+
+    public int? Quantity { get; set; }
+
+    [Parameter]
+    public string? slug { get; set; }
+
+}
+@functions {
+    protected override void OnInitialized()
+    {
+        ListProduct = ProductService.GetAll();
+        @if (slug != null)
+        {
+            Product = ProductService.GetProductBySlug(slug);
+        }
+        base.OnInitialized();
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (!string.IsNullOrEmpty(slug))
+        {
+            Product = ProductService.GetProductBySlug(slug);
+        }
+        base.OnParametersSet();
+    }
+
+    public void AddToCart()
+    {
+        if (Product != null)
+        {
+            shoppingCartService.AddProduct(Product, Quantity ?? 1);
+            Quantity = null;
+        }
+    }
+}

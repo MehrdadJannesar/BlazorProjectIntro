@@ -1,0 +1,52 @@
+﻿@page "/cart"
+@using BlazorProjectIntro.Libraries.Product;
+@using BlazorProjectIntro.Libraries.ShoppingCart;
+@inject IShoppingCartService shoppingCartService
+@inject IProductService ProductService;
+
+<div class="row">
+    <table>
+        <tr>
+            <th>image</th>
+            <th>name</th>
+            <th>quantity</th>
+            <th>price</th>
+            <th>total price</th>
+            <th>Opration</th>
+        </tr>
+        @foreach (var item in shoppingCartService.Get().Items)
+        {
+            <tr>
+                <td>
+                    <img src="/Images/@item.Products.Image" class="card-img-top" style="max-width:120px">
+                </td>
+                <td>@item.Products.Name</td>
+                <td>
+
+                            <span class="input-group-btn">
+                                <button type="button" class="quantity-left-minus btn btn-danger btn-number" data-type="minus" data-field="" @onclick="() => shoppingCartService.RemoveProduct(item.Products, 1)">
+                                    <span class="glyphicon glyphicon-minus">-</span>
+                                </button>
+                            </span>
+                            <input type="text" id="quantity" name="quantity" class="form-control input-number" value="@item.Quantity" min="1" max="100">
+                            <span class="input-group-btn">
+                                <button type="button" class="quantity-right-plus btn btn-success btn-number" data-type="plus" data-field="" @onclick="() => shoppingCartService.AddProduct(item.Products, 1)">
+                                    <span class="glyphicon glyphicon-plus">+</span>
+                                </button>
+                            </span>
+
+                </td>
+                <td>@item.Price</td>
+                <td>@item.TotalPrice</td>
+                <td>
+                    <button type="button" class="quantity-left-minus btn btn-danger btn-number" data-type="minus" data-field="" @onclick="() => shoppingCartService.DeleteProduct(item)">
+                        <span class="glyphicon glyphicon-minus">Delet Item</span>
+                    </button>
+                </td>
+            </tr>
+        }
+
+    </table>
+
+</div>
+

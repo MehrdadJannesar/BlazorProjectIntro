@@ -1,0 +1,62 @@
+﻿@using BlazorProjectIntro.Libraries.Product.Model;
+@using BlazorProjectIntro.Libraries.ShoppingCart;
+@inject IShoppingCartService shoppingCartService;
+
+
+@implements IProductAddToCart
+
+<div class="card m-2" style="width: 18rem;">
+    <img src="/Images/@Product.Image" class="card-img-top" style="max-height:50%">
+    <div class="card-body">
+        <h5 class="card-title">
+            <a href="@Product.FullUrl">
+                @Product.Name
+            </a>
+        </h5>
+        <p class="card-text">Price: @Product.Price $</p>
+        <div class="row">
+            <div class="col-5">
+                <input @bind="Quantity" type="number" placeholder="Count?" class="form-control" />
+            </div>
+            <div class="col-7">
+                <button class="btn btn-outline-success"
+                @onclick="AddToCart">
+                    @if (shoppingCartService.HasProduct(Product.Sku))
+                    {
+                        <span>
+                            Add to cart
+                            @if (Quantity.HasValue)
+                            {
+                                <text>@Quantity More than</text>
+                            }
+                        </span>
+                    }
+                    else
+                    {
+                        <span>
+                            First shopping...
+                        </span>
+                    }
+                </button>
+            </div>
+        </div>
+
+        <a href="@Product.FullUrl" class="btn btn-primary">Details</a>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public ProductModel? Product { get; set; }
+    public int? Quantity { get; set; }
+}
+@functions{
+    public void AddToCart()
+    {
+        if (Product != null)
+        {
+            shoppingCartService.AddProduct(Product, Quantity ?? 1);
+            Quantity = null;
+        }
+    }
+}
