@@ -7,6 +7,9 @@
 @if (Product != null)
 {
     <PageTitle>@Product.Name</PageTitle>
+    <HeadContent>
+        <meta name="description" content="@Product.Name"/>
+    </HeadContent>
 }
 
 <div class="row">
@@ -30,7 +33,7 @@
                         <p>Items in the shopping cart : @shoppingCartService.Count()</p>
                     }
                     <div class="col-4">
-                        <input @bind="Quantity" type="number" placeholder="Count?" class="form-control" />
+                        <input @bind="Quantity" @bind:event="oninput" type="number" placeholder="Count?" class="form-control" />
                     </div>
                     <div class="col-3">
                         <button class="btn btn-outline-primary"
